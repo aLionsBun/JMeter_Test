@@ -24,6 +24,7 @@
         <stringProp name="ThreadGroup.duration"></stringProp>
         <stringProp name="ThreadGroup.delay"></stringProp>
         <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
+        <stringProp name="TestPlan.comments">Any failed assertion will stop current thread</stringProp>
       </ThreadGroup>
       <hashTree>
         <ConfigTestElement guiclass="HttpDefaultsGui" testclass="ConfigTestElement" testname="HTTP Request Defaults" enabled="true">
@@ -51,7 +52,7 @@
           <collectionProp name="Arguments.arguments">
             <elementProp name="PROTOCOL" elementType="Argument">
               <stringProp name="Argument.name">PROTOCOL</stringProp>
-              <stringProp name="Argument.value">http</stringProp>
+              <stringProp name="Argument.value">https</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
               <stringProp name="Argument.desc">Connection protocol (Can be changed to https)</stringProp>
             </elementProp>
@@ -120,8 +121,8 @@
           </HeaderManager>
           <hashTree/>
           <DurationAssertion guiclass="DurationAssertionGui" testclass="DurationAssertion" testname="Duration Assertion" enabled="true">
-            <stringProp name="DurationAssertion.duration">2000</stringProp>
-            <stringProp name="TestPlan.comments">If repsonse takes longer than specified duration (in ms), assertion fails and stops current thread</stringProp>
+            <stringProp name="DurationAssertion.duration">5000</stringProp>
+            <stringProp name="TestPlan.comments">Assertion fails if response takes longer than specified duration (in ms)</stringProp>
           </DurationAssertion>
           <hashTree/>
         </hashTree>
@@ -158,7 +159,7 @@
           </HTTPSamplerProxy>
           <hashTree/>
           <XPathExtractor guiclass="XPathExtractorGui" testclass="XPathExtractor" testname="ITEM_URL XPath Extractor" enabled="true">
-            <stringProp name="XPathExtractor.default">NOT_FOUND</stringProp>
+            <stringProp name="XPathExtractor.default"></stringProp>
             <stringProp name="XPathExtractor.refname">ITEM_URL</stringProp>
             <stringProp name="XPathExtractor.matchNumber">0</stringProp>
             <stringProp name="XPathExtractor.xpathQuery">//h2[@class=&apos;product-title&apos;]//a/@href</stringProp>
@@ -198,7 +199,7 @@
           </HeaderManager>
           <hashTree/>
           <XPathAssertion guiclass="XPathAssertionGui" testclass="XPathAssertion" testname="Search Result XPath Assertion" enabled="true">
-            <stringProp name="TestPlan.comments">Checking whether result page contains at least one search result. Assertion fails and stops current thread if there are no search results</stringProp>
+            <stringProp name="TestPlan.comments">Assertion fails if current page contains no search results</stringProp>
             <boolProp name="XPath.negate">false</boolProp>
             <stringProp name="XPath.xpath">//h2[@class=&apos;product-title&apos;]</stringProp>
             <boolProp name="XPath.validate">false</boolProp>
@@ -251,6 +252,7 @@
             <boolProp name="XPathExtractor.validate">false</boolProp>
             <boolProp name="XPathExtractor.tolerant">true</boolProp>
             <boolProp name="XPathExtractor.namespace">false</boolProp>
+            <stringProp name="TestPlan.comments">Extracting the quantity of selected item that is to be added to cart</stringProp>
           </XPathExtractor>
           <hashTree/>
           <XPathExtractor guiclass="XPathExtractorGui" testclass="XPathExtractor" testname="TOKEN XPath Extractor" enabled="true">
@@ -291,6 +293,16 @@
               </elementProp>
             </collectionProp>
           </HeaderManager>
+          <hashTree/>
+          <XPathAssertion guiclass="XPathAssertionGui" testclass="XPathAssertion" testname="Availability XPath Assertion" enabled="true">
+            <stringProp name="TestPlan.comments">Assertion fails if there is no information about selected product&apos;s availability or if product is out of stock </stringProp>
+            <boolProp name="XPath.negate">false</boolProp>
+            <stringProp name="XPath.xpath">//span[contains(@id, &apos;stock-availability&apos;) and text()!=&apos;Out of stock&apos;]</stringProp>
+            <boolProp name="XPath.validate">false</boolProp>
+            <boolProp name="XPath.whitespace">false</boolProp>
+            <boolProp name="XPath.tolerant">true</boolProp>
+            <boolProp name="XPath.namespace">false</boolProp>
+          </XPathAssertion>
           <hashTree/>
         </hashTree>
         <TransactionController guiclass="TransactionControllerGui" testclass="TransactionController" testname="Add Item Controller" enabled="true">
@@ -370,6 +382,17 @@
             </collectionProp>
           </HeaderManager>
           <hashTree/>
+          <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Adding to Cart Response Assertion" enabled="true">
+            <collectionProp name="Asserion.test_strings">
+              <stringProp name="-547797305">&quot;success&quot;:true</stringProp>
+            </collectionProp>
+            <stringProp name="TestPlan.comments">Assertion fails if success flag in response body is set to false (adding to cart failed)</stringProp>
+            <stringProp name="Assertion.custom_message">Adding to cart failed</stringProp>
+            <stringProp name="Assertion.test_field">Assertion.response_data</stringProp>
+            <boolProp name="Assertion.assume_success">false</boolProp>
+            <intProp name="Assertion.test_type">2</intProp>
+          </ResponseAssertion>
+          <hashTree/>
         </hashTree>
         <TransactionController guiclass="TransactionControllerGui" testclass="TransactionController" testname="View Cart Content Controller" enabled="true">
           <boolProp name="TransactionController.includeTimers">false</boolProp>
@@ -423,6 +446,17 @@
               </elementProp>
             </collectionProp>
           </HeaderManager>
+          <hashTree/>
+          <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Cart Response Assertion" enabled="true">
+            <collectionProp name="Asserion.test_strings">
+              <stringProp name="1057450005">Your Shopping Cart is empty!</stringProp>
+            </collectionProp>
+            <stringProp name="TestPlan.comments">Assertion fails if the shopping cart is empty (no items were added to cart)</stringProp>
+            <stringProp name="Assertion.custom_message">Cart is empty</stringProp>
+            <stringProp name="Assertion.test_field">Assertion.response_data</stringProp>
+            <boolProp name="Assertion.assume_success">false</boolProp>
+            <intProp name="Assertion.test_type">6</intProp>
+          </ResponseAssertion>
           <hashTree/>
         </hashTree>
       </hashTree>
